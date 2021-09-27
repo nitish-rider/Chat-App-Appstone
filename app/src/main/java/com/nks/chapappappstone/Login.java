@@ -27,6 +27,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.FirebaseUserMetadata;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.nks.chapappappstone.Model.User;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -38,8 +41,17 @@ public class Login extends Fragment {
     private GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
     private Executor executor=Executors.newSingleThreadExecutor();
+    DatabaseReference reference;
 
-
+    @Override
+    public void onStart() {
+        super.onStart();
+        FirebaseUser user=mAuth.getCurrentUser();
+        if(user!=null){
+            Intent intent=new Intent(requireActivity().getApplicationContext(), MainActivity.class);
+            startActivity(intent);
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -111,8 +123,15 @@ public class Login extends Fragment {
 
    void updateUI(FirebaseUser user) {
        if(user!=null){
-           Intent intent=new Intent(requireActivity().getApplicationContext(), MainActivity.class);
-           startActivity(intent);
+           reference = FirebaseDatabase.getInstance().getReference("Users").child(user.getUid());
+           User user1=new User(user.getUid(),user.getDisplayName(),"default");
+           reference.setValue(user1).addOnCompleteListener(new OnCompleteListener<Void>() {
+               @Override
+               public void onComplete(@NonNull Task<Void> task) {
+                   Intent intent=new Intent(requireActivity().getApplicationContext(), MainActivity.class);
+                   startActivity(intent);
+               }
+           });
        }
     }
 
