@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "411419921102",
+    "project_id": "chatapp-appstone",
+    "storage_bucket": "chatapp-appstone.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:411419921102:android:944ddf6da75f79e9001e9f",
+        "android_client_info": {
+          "package_name": "com.nks.chapappappstone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "411419921102-1nr7306qj3gl7a0upojud9u1r0i695jf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABdPCNc6s73Z6aYboXL1qMopjQ3ucRH0c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "411419921102-1nr7306qj3gl7a0upojud9u1r0i695jf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
