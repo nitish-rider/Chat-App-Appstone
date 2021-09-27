@@ -3,6 +3,8 @@ package com.nks.chapappappstone;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,11 +22,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.nks.chapappappstone.Adapter.MessageAdapter;
+import com.nks.chapappappstone.Model.Chat;
 import com.nks.chapappappstone.Model.User;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -34,6 +40,11 @@ public class MessageActivity extends AppCompatActivity {
     TextView username;
     ImageButton btn_send;
     EditText text_send;
+
+    MessageAdapter messageAdapter;
+    List<Chat> mchat;
+
+    RecyclerView recyclerView;
 
     FirebaseUser fuser;
     DatabaseReference reference;
@@ -55,6 +66,12 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
 
+        recyclerView = findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
+        linearLayoutManager.setStackFromEnd(true);
+        recyclerView.setLayoutManager(linearLayoutManager);
+
         profile_image = findViewById(R.id.profile_image);
         username = findViewById(R.id.username);
         btn_send = findViewById(R.id.btn_send);
@@ -70,7 +87,7 @@ public class MessageActivity extends AppCompatActivity {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss z");
                 String currentDateandTime = sdf.format(new Date());
                 if (!msg.equals("")){
-                    sendMessage(fuser.getEmail(), userid, msg,currentDateandTime);
+                    sendMessage(fuser.getUid(), userid, msg,currentDateandTime,fuser.getEmail());
                 } else {
                     Toast.makeText(MessageActivity.this, "You can't send empty message", Toast.LENGTH_SHORT).show();
                 }
@@ -92,7 +109,7 @@ public class MessageActivity extends AppCompatActivity {
                     Glide.with(getApplicationContext()).load(user.getImageURL()).into(profile_image);
                 }
 
-//                readMesagges(fuser.getUid(), userid, user.getImageURL());
+                readMesagges(fuser.getUid(), userid, user.getImageURL());
             }
 
             @Override
@@ -101,59 +118,51 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
     }
-    private void sendMessage(String sender, final String receiver, String message,String time){
+    private void sendMessage(String sender, final String receiver, String message,String time,String senderemail){
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
 
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("message", message);
-        hashMap.put("sender", sender);
+        hashMap.put("sender", senderemail);
         hashMap.put("timeStamp",time);
 
-        reference.child("Chats").push().setValue(hashMap);
+        reference.child("messages").push().setValue(hashMap);
 
-//
-//        // add user to chat fragment
-//        final DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("Chatlist")
-//                .child(fuser.getUid())
-//                .child(userid);
-//
-//        chatRef.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                if (!dataSnapshot.exists()){
-//                    chatRef.child("id").setValue(userid);
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
-//
-//        final DatabaseReference chatRefReceiver = FirebaseDatabase.getInstance().getReference("Chatlist")
-//                .child(userid)
-//                .child(fuser.getUid());
-//        chatRefReceiver.child("id").setValue(fuser.getUid());
-//
-//        final String msg = message;
-//
-//        reference = FirebaseDatabase.getInstance().getReference("Users").child(fuser.getUid());
-//        reference.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                User user = dataSnapshot.getValue(User.class);
-//                if (notify) {
-//                    sendNotifiaction(receiver, user.getUsername(), msg);
-//                }
-//                notify = false;
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
+
+        HashMap<String, Object> hashMap1 = new HashMap<>();
+        hashMap1.put("sender", sender);
+        hashMap1.put("receiver", receiver);
+        hashMap1.put("message", message);
+        hashMap1.put("isseen", false);
+        reference.child("Chats").push().setValue(hashMap1);
+    }
+
+    private void readMesagges(final String myid, final String userid, final String imageurl){
+        mchat = new ArrayList<>();
+
+        reference = FirebaseDatabase.getInstance().getReference("Chats");
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                mchat.clear();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    Chat chat = snapshot.getValue(Chat.class);
+                    assert chat != null;
+                    if (chat.getReceiver().equals(myid) && chat.getSender().equals(userid) ||
+                            chat.getReceiver().equals(userid) && chat.getSender().equals(myid)){
+                        mchat.add(chat);
+                    }
+
+                    messageAdapter = new MessageAdapter(MessageActivity.this, mchat, imageurl);
+                    recyclerView.setAdapter(messageAdapter);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }

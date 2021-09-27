@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         final ViewPager viewPager = findViewById(R.id.view_pager);
         ViewPagerAdapter viewPagerAdapter=new ViewPagerAdapter(getSupportFragmentManager());
 
-        viewPagerAdapter.addFragment(new ChatFragment(),"Chats");
+//        viewPagerAdapter.addFragment(new ChatFragment(),"Chats");
         viewPagerAdapter.addFragment(new UsersFragment(),"Users");
 
         viewPager.setAdapter(viewPagerAdapter);
