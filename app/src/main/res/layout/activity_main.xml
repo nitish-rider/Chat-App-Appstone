@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/white"
     tools:context=".MainActivity">
@@ -38,40 +38,26 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-<!--    <fragment-->
-<!--        android:id="@+id/nav_host_fragment"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:name="androidx.navigation.fragment.NavHostFragment"-->
-<!--        android:layout_height="match_parent"-->
-<!--        app:navGraph="@navigation/mobile_nav"-->
-<!--        app:defaultNavHost="true"-->
-<!--        android:layout_below="@+id/bar_layout" />-->
-
-<!--    <com.google.android.material.bottomnavigation.BottomNavigationView-->
-<!--        android:id="@+id/nav_view"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="60dp"-->
-<!--        android:layout_below="@+id/nav_host_fragment"-->
-<!--        app:menu="@menu/bottom_nav"-->
-<!--        android:layout_alignParentStart="true"-->
-<!--        android:layout_alignParentBottom="true"-->
-<!--        android:layout_marginStart="0dp"-->
-<!--        android:layout_marginTop="0dp"-->
-<!--        android:layout_marginBottom="0dp" />-->
-        <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tab_layout"
+    <fragment
+        android:id="@+id/nav_host_fragment"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/toolbar_color"
-        app:tabSelectedTextColor="@color/white"
-        app:tabIndicatorColor="@color/black"
-            android:layout_below="@+id/bar_layout"
-        app:tabTextColor="@color/black"/>
-
-    <androidx.viewpager.widget.ViewPager
-        android:layout_below="@+id/tab_layout"
-        android:layout_width="match_parent"
+        android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_height="match_parent"
-        android:id="@+id/view_pager"/>
+        app:navGraph="@navigation/mobile_nav"
+        app:defaultNavHost="true"
+        android:layout_weight="1"
+        android:layout_below="@+id/bar_layout" />
 
-</RelativeLayout>
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_below="@+id/nav_host_fragment"
+        app:menu="@menu/bottom_nav"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="0dp" />
+
+</LinearLayout>

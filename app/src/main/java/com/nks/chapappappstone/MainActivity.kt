@@ -1,129 +1,113 @@
-package com.nks.chapappappstone;
+package com.nks.chapappappstone
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.navigation.NavController;
-import androidx.navigation.NavHostController;
-import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.AppCompatActivity
+import android.widget.TextView
+import com.google.firebase.auth.FirebaseAuth
+import android.os.Bundle
+import com.nks.chapappappstone.R
+import com.google.firebase.auth.FirebaseUser
+import com.bumptech.glide.Glide
+import com.google.android.material.tabs.TabLayout
+import androidx.viewpager.widget.ViewPager
+import com.nks.chapappappstone.Fragments.ChatFragment
+import com.nks.chapappappstone.Fragments.UsersFragment
+import android.content.Intent
+import android.view.Menu
+import android.view.MenuItem
+import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import com.nks.chapappappstone.LoginRegister
+import androidx.fragment.app.FragmentPagerAdapter
+import androidx.navigation.Navigation.findNavController
+import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import de.hdodenhof.circleimageview.CircleImageView
+import java.util.ArrayList
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.TextView;
-
-import com.bumptech.glide.Glide;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.tabs.TabLayout;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.FirebaseDatabase;
-import com.nks.chapappappstone.Fragments.ChatFragment;
-import com.nks.chapappappstone.Fragments.UsersFragment;
-
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import de.hdodenhof.circleimageview.CircleImageView;
-
-public class MainActivity extends AppCompatActivity {
-    CircleImageView profile_pic;
-    TextView username;
-    private FirebaseAuth mAuth;
-
-    @Override
-    public void onBackPressed() {
-        finish();
+class MainActivity : AppCompatActivity() {
+    lateinit var profile_pic: CircleImageView
+    lateinit var username: TextView
+    private var mAuth: FirebaseAuth? = null
+    override fun onBackPressed() {
+        finish()
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar!!.setTitle("")
+        profile_pic = findViewById(R.id.profile_image)
+        username = findViewById(R.id.username)
+        mAuth = FirebaseAuth.getInstance()
+        val user = mAuth!!.currentUser!!
+        username.text=user.displayName
+        Glide.with(applicationContext).load(user.photoUrl).into(profile_pic)
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("");
 
-        profile_pic=findViewById(R.id.profile_image);
-        username=findViewById(R.id.username);
-        mAuth=FirebaseAuth.getInstance();
-        FirebaseUser user=mAuth.getCurrentUser();
-        assert user != null;
-        username.setText(user.getDisplayName());
-        Glide.with(getApplicationContext()).load(user.getPhotoUrl()).into(profile_pic);
+        val navView: BottomNavigationView=findViewById(R.id.nav_view)
+        val navController = findNavController(this, R.id.nav_host_fragment)
+        navView.setupWithNavController(navController)
 
-//        BottomNavigationView navigationView=findViewById(R.id.nav_view);
-//        NavController navController=new NavHostController(this);
-
-        final TabLayout tabLayout = findViewById(R.id.tab_layout);
-        final ViewPager viewPager = findViewById(R.id.view_pager);
-        ViewPagerAdapter viewPagerAdapter=new ViewPagerAdapter(getSupportFragmentManager());
-
-        viewPagerAdapter.addFragment(new ChatFragment(),"Chats");
-        viewPagerAdapter.addFragment(new UsersFragment(),"Users");
-
-        viewPager.setAdapter(viewPagerAdapter);
-        tabLayout.setupWithViewPager(viewPager);
+//        val tabLayout = findViewById<TabLayout>(R.id.tab_layout)
+//        val viewPager = findViewById<ViewPager>(R.id.view_pager)
+//        val viewPagerAdapter: ViewPagerAdapter = ViewPagerAdapter(
+//            supportFragmentManager
+//        )
+//        viewPagerAdapter.addFragment(ChatFragment(), "Chats")
+//        viewPagerAdapter.addFragment(UsersFragment(), "Users")
+//        viewPager.adapter = viewPagerAdapter
+//        tabLayout.setupWithViewPager(viewPager)
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu,menu);
-        return true;
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu, menu)
+        return true
     }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
-
-            case  R.id.logout:
-                FirebaseAuth.getInstance().signOut();
-                startActivity(new Intent(MainActivity.this, LoginRegister.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                return true;
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.logout -> {
+                FirebaseAuth.getInstance().signOut()
+                startActivity(
+                    Intent(
+                        this@MainActivity,
+                        LoginRegister::class.java
+                    ).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                )
+                return true
+            }
         }
-
-        return false;
+        return false
     }
 
-    class ViewPagerAdapter extends FragmentPagerAdapter {
-
-        private ArrayList<Fragment> fragments;
-        private ArrayList<String> titles;
-
-        ViewPagerAdapter(FragmentManager fm){
-            super(fm);
-            this.fragments = new ArrayList<>();
-            this.titles = new ArrayList<>();
+    internal inner class ViewPagerAdapter(fm: FragmentManager?) : FragmentPagerAdapter(
+        fm!!
+    ) {
+        private val fragments: ArrayList<Fragment>
+        private val titles: ArrayList<String>
+        override fun getItem(position: Int): Fragment {
+            return fragments[position]
         }
 
-        @Override
-        public Fragment getItem(int position) {
-            return fragments.get(position);
+        override fun getCount(): Int {
+            return fragments.size
         }
 
-        @Override
-        public int getCount() {
-            return fragments.size();
+        fun addFragment(fragment: Fragment, title: String) {
+            fragments.add(fragment)
+            titles.add(title)
         }
 
-        public void addFragment(Fragment fragment, String title){
-            fragments.add(fragment);
-            titles.add(title);
+        override fun getPageTitle(position: Int): CharSequence? {
+            return titles[position]
         }
-        @Nullable
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return titles.get(position);
+
+        init {
+            fragments = ArrayList()
+            titles = ArrayList()
         }
     }
-
-
 }
