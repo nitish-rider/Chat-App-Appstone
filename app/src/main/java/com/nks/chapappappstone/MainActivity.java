@@ -7,6 +7,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.navigation.NavController;
+import androidx.navigation.NavHostController;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
@@ -16,6 +18,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -56,6 +59,9 @@ public class MainActivity extends AppCompatActivity {
         assert user != null;
         username.setText(user.getDisplayName());
         Glide.with(getApplicationContext()).load(user.getPhotoUrl()).into(profile_pic);
+
+//        BottomNavigationView navigationView=findViewById(R.id.nav_view);
+//        NavController navController=new NavHostController(this);
 
         final TabLayout tabLayout = findViewById(R.id.tab_layout);
         final ViewPager viewPager = findViewById(R.id.view_pager);
