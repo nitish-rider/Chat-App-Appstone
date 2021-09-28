@@ -35,6 +35,10 @@ public class MainActivity extends AppCompatActivity {
     TextView username;
     private FirebaseAuth mAuth;
 
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,14 +53,10 @@ public class MainActivity extends AppCompatActivity {
         username=findViewById(R.id.username);
         mAuth=FirebaseAuth.getInstance();
         FirebaseUser user=mAuth.getCurrentUser();
+        assert user != null;
         username.setText(user.getDisplayName());
-        if (user.getPhotoUrl().equals("default")){
-            profile_pic.setImageResource(R.mipmap.ic_launcher);
-        } else {
+        Glide.with(getApplicationContext()).load(user.getPhotoUrl()).into(profile_pic);
 
-            //change this
-            Glide.with(getApplicationContext()).load(user.getPhotoUrl()).into(profile_pic);
-        }
         final TabLayout tabLayout = findViewById(R.id.tab_layout);
         final ViewPager viewPager = findViewById(R.id.view_pager);
         ViewPagerAdapter viewPagerAdapter=new ViewPagerAdapter(getSupportFragmentManager());
@@ -80,7 +80,6 @@ public class MainActivity extends AppCompatActivity {
 
             case  R.id.logout:
                 FirebaseAuth.getInstance().signOut();
-                // change this code beacuse your app will crash
                 startActivity(new Intent(MainActivity.this, LoginRegister.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                 return true;
         }
@@ -113,9 +112,6 @@ public class MainActivity extends AppCompatActivity {
             fragments.add(fragment);
             titles.add(title);
         }
-
-        // Ctrl + O
-
         @Nullable
         @Override
         public CharSequence getPageTitle(int position) {

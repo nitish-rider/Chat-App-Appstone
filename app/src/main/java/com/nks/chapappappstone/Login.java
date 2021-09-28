@@ -50,6 +50,7 @@ public class Login extends Fragment {
         if(user!=null){
             Intent intent=new Intent(requireActivity().getApplicationContext(), MainActivity.class);
             startActivity(intent);
+            getActivity().finish();
         }
     }
 
@@ -124,7 +125,7 @@ public class Login extends Fragment {
    void updateUI(FirebaseUser user) {
        if(user!=null){
            reference = FirebaseDatabase.getInstance().getReference("Users").child(user.getUid());
-           User user1=new User(user.getUid(),user.getDisplayName(),"default");
+           User user1=new User(user.getUid(),user.getDisplayName(),user.getPhotoUrl().toString());
            reference.setValue(user1).addOnCompleteListener(new OnCompleteListener<Void>() {
                @Override
                public void onComplete(@NonNull Task<Void> task) {
